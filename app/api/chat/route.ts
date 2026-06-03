@@ -13,7 +13,6 @@ function getSupabase() {
   );
 }
 
-// The setter's permanent "brain" — baked into code, never editable from outside
 const BRAIN = `You are a real human appointment setter. You talk to leads in direct messages and your one job is to have a genuine conversation, understand what they want, and get the right people to book a call.
 
 HOW YOU TALK (follow exactly)
@@ -42,7 +41,6 @@ export async function POST(req: NextRequest) {
 
     const supabase = getSupabase();
 
-    // Always read the latest client config so edits in Supabase take effect immediately
     const { data: client, error: clientError } = await supabase
       .from("clients")
       .select("*")
@@ -56,14 +54,12 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Inject the business training into the brain
     const systemPrompt = BRAIN
       .replace("{{system_prompt}}", client.system_prompt || "")
       .replace("{{active_rules}}", client.active_rules || "")
       .replace("{{voice_samples}}", client.voice_samples || "")
       .replace("{{business_context}}", client.business_context || "");
 
-    // Create a new lead record if this is the first message
     let currentLeadId = leadId as string | null;
     if (!currentLeadId) {
       const { data: lead, error: leadError } = await supabase
@@ -78,7 +74,6 @@ export async function POST(req: NextRequest) {
       currentLeadId = lead.id as string;
     }
 
-    // Persist the user's message
     const lastMessage = messages[messages.length - 1];
     if (lastMessage?.role === "user") {
       await supabase.from("messages").insert({
@@ -89,7 +84,6 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    // Call Claude — server-side only, key never touches the browser
     const response = await anthropic.messages.create({
       model: "claude-sonnet-4-6",
       max_tokens: 500,
@@ -103,7 +97,6 @@ export async function POST(req: NextRequest) {
     const reply =
       response.content[0].type === "text" ? response.content[0].text : "";
 
-    // Persist the assistant reply
     await supabase.from("messages").insert({
       lead_id: currentLeadId,
       client_id: client.id,

@@ -55,12 +55,10 @@ export default function Home() {
 
   return (
     <div className="flex flex-col h-screen bg-gray-50">
-      {/* Header */}
       <header className="bg-white border-b border-gray-200 px-4 py-3 shadow-sm">
         <h1 className="text-base font-semibold text-gray-800">AI Appointment Setter</h1>
       </header>
 
-      {/* Messages */}
       <div className="flex-1 overflow-y-auto px-4 py-4 space-y-3">
         {messages.length === 0 && (
           <p className="text-center text-gray-400 text-sm mt-24">
@@ -82,7 +80,6 @@ export default function Home() {
           </div>
         ))}
 
-        {/* Typing indicator */}
         {loading && (
           <div className="flex justify-start">
             <div className="bg-white border border-gray-200 rounded-2xl rounded-bl-sm shadow-sm px-4 py-3">
@@ -98,11 +95,7 @@ export default function Home() {
         <div ref={bottomRef} />
       </div>
 
-      {/* Input bar */}
-      <form
-        onSubmit={sendMessage}
-        className="bg-white border-t border-gray-200 px-4 py-3"
-      >
+      <form onSubmit={sendMessage} className="bg-white border-t border-gray-200 px-4 py-3">
         <div className="flex gap-2">
           <input
             type="text"
