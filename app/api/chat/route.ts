@@ -8,8 +8,8 @@ const anthropic = new Anthropic({
 
 function getSupabase() {
   return createClient(
-    process.env.SUPABASE_URL!,
-    process.env.SUPABASE_ANON_KEY!
+    process.env.SUPABASE_URL ?? "https://itxaapvblgtvslsccbeg.supabase.co",
+    process.env.SUPABASE_ANON_KEY ?? "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml0eGFhcHZibGd0dnNsc2NjYmVnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MTE1NDEsImV4cCI6MjA5NjA4NzU0MX0.z9HC-dU4JjIRaFGfZfITsNj-P1zjI5LOknXKM0jU7U4"
   );
 }
 
