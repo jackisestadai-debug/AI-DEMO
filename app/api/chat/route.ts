@@ -41,11 +41,13 @@ export async function POST(req: NextRequest) {
 
     const supabase = getSupabase();
 
-    const { data: client, error: clientError } = await supabase
-      .from("clients")
-      .select("*")
-      .eq("is_active", true)
-      .single();
+    // If CLIENT_ID env var is set, load that specific client row.
+    // Otherwise fall back to the single active row (default for single-client deploys).
+    const clientQuery = process.env.CLIENT_ID
+      ? supabase.from("clients").select("*").eq("id", process.env.CLIENT_ID)
+      : supabase.from("clients").select("*").eq("is_active", true);
+
+    const { data: client, error: clientError } = await clientQuery.single();
 
     if (clientError || !client) {
       return NextResponse.json(
