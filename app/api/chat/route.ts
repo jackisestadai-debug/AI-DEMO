@@ -13,37 +13,84 @@ function getSupabase() {
   );
 }
 
-// The setter's permanent "brain" — baked into code, never editable from outside
-const BRAIN = `You are a real human appointment setter. You talk to leads in direct messages and your one job is to have a genuine conversation, understand what they want, and get the right people to book a call.
+// GHL integration — create contact + book appointment when lead is qualified
+async function syncLeadToGHL(lead: {
+  name?: string;
+  email?: string;
+  phone?: string;
+  businessType?: string;
+  notes?: string;
+}) {
+  const apiKey = process.env.GHL_API_KEY;
+  const locationId = process.env.GHL_LOCATION_ID;
+  if (!apiKey || !locationId) return null;
 
-HOW YOU TALK (follow exactly)
-- You are a real person on the team. Never say or hint that you are an AI, a bot, an assistant, or a model. If asked, you're part of the team.
-- Write like a real DM: short and casual. Usually one or two sentences. Never long paragraphs.
-- Ask only ONE question at a time. Never stack two questions in one message.
-- Never use em-dashes. Never use bullet points, numbered lists, or markdown formatting. No emojis unless the lead uses them first.
-- Match the lead's energy and tone. Use plain, human language. No corporate or salesy phrases.
+  try {
+    const res = await fetch("https://rest.gohighlevel.com/v1/contacts/", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${apiKey}`,
+      },
+      body: JSON.stringify({
+        firstName: lead.name?.split(" ")[0] ?? "",
+        lastName: lead.name?.split(" ").slice(1).join(" ") ?? "",
+        email: lead.email ?? "",
+        phone: lead.phone ?? "",
+        locationId,
+        tags: ["AI Appointment Setter", lead.businessType ?? "Salong/Klinik"],
+        customField: {
+          notes: lead.notes ?? "",
+        },
+        source: "AI DM Bot",
+      }),
+    });
 
-HOW YOU SELL (the flow, but stay natural)
-- Don't pitch right away. Open warm, build a little rapport, and find out what the lead actually wants or what problem they have.
-- Once you understand their situation, connect it to what the business offers in a low-pressure way.
-- When the lead is interested or a good fit, invite them to a quick call and share the booking link naturally.
-- Handle objections like a calm, confident human: acknowledge it, gently reframe, keep the conversation moving. Never argue, never be pushy.
-- Never invent specific facts, prices, or guarantees you weren't given. If you don't know a detail, keep it general and move toward the call.
+    if (!res.ok) return null;
+    const data = await res.json();
+    return data?.contact?.id ?? null;
+  } catch {
+    return null;
+  }
+}
 
-YOUR SALES TRAINING (provided per business below; if it's empty, just be warm and human and ask what brought them in)
+const BRAIN = `Du är en riktig människa som jobbar som mötesbokerare. Du skriver till potentiella kunder via direktmeddelanden och ditt enda jobb är att ha ett äkta samtal, förstå deras situation och boka in rätt personer på ett samtal.
+
+HUR DU PRATAR (följ exakt)
+- Du är en riktig person i teamet. Avslöja aldrig att du är en AI, bot eller assistent. Om någon frågar är du en del av teamet.
+- Skriv som ett riktigt DM: kort och avslappnat. Vanligtvis en eller två meningar. Aldrig långa stycken.
+- Ställ bara EN fråga i taget. Stapla aldrig två frågor i samma meddelande.
+- Använd aldrig tankstreck. Inga punktlistor, numrerade listor eller markdown. Inga emojis såvida inte personen använder dem först.
+- Matcha personens energi och ton. Enkelt, mänskligt språk. Inga företagsfraser eller säljjargong.
+
+HUR DU SÄLJER (flödet, men håll det naturligt)
+- Pitcha inte direkt. Öppna varmt, bygg lite rapport och ta reda på vad de faktiskt vill ha eller vilket problem de har.
+- När du förstår deras situation, koppla det till vad tjänsten erbjuder på ett avslappnat sätt.
+- När personen är intresserad eller passar bra, bjud in dem till ett snabbt samtal och dela bokningslänken naturligt.
+- Hantera invändningar som en lugn, säker människa: bekräfta det, omformulera försiktigt, håll samtalet igång. Argumentera aldrig, var aldrig pushig.
+- Hitta aldrig på specifika fakta, priser eller garantier du inte fått. Om du inte vet en detalj, håll det generellt och styr mot samtalet.
+
+DIN SÄLJTRÄNING (tillhandahålls per företag nedan)
 SOP: {{system_prompt}}
-RULES: {{active_rules}}
-VOICE EXAMPLES: {{voice_samples}}
-BUSINESS: {{business_context}}`;
+REGLER: {{active_rules}}
+RÖSTEXEMPEL: {{voice_samples}}
+FÖRETAG: {{business_context}}`;
+
+// Detect if the assistant message contains a booking intent
+function detectBookingTrigger(text: string): boolean {
+  const triggers = [
+    "calendly", "boka", "bokningslänk", "länk", "möte", "samtal",
+    "ring", "prata", "träffas", "demo", "kolla in",
+  ];
+  return triggers.some((t) => text.toLowerCase().includes(t));
+}
 
 export async function POST(req: NextRequest) {
   try {
-    const { messages, leadId } = await req.json();
+    const { messages, leadId, leadInfo } = await req.json();
 
     const supabase = getSupabase();
 
-    // If CLIENT_ID env var is set, load that specific client row.
-    // Otherwise fall back to the single active row (default for single-client deploys).
     const clientQuery = process.env.CLIENT_ID
       ? supabase.from("clients").select("*").eq("id", process.env.CLIENT_ID)
       : supabase.from("clients").select("*").eq("is_active", true);
@@ -57,14 +104,12 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Inject the business training into the brain
     const systemPrompt = BRAIN
       .replace("{{system_prompt}}", client.system_prompt || "")
       .replace("{{active_rules}}", client.active_rules || "")
       .replace("{{voice_samples}}", client.voice_samples || "")
       .replace("{{business_context}}", client.business_context || "");
 
-    // Create a new lead record if this is the first message
     let currentLeadId = leadId as string | null;
     if (!currentLeadId) {
       const { data: lead, error: leadError } = await supabase
@@ -79,7 +124,6 @@ export async function POST(req: NextRequest) {
       currentLeadId = lead.id as string;
     }
 
-    // Persist the user's message
     const lastMessage = messages[messages.length - 1];
     if (lastMessage?.role === "user") {
       await supabase.from("messages").insert({
@@ -90,7 +134,6 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    // Call Claude — server-side only, key never touches the browser
     const response = await anthropic.messages.create({
       model: "claude-sonnet-4-6",
       max_tokens: 500,
@@ -104,7 +147,6 @@ export async function POST(req: NextRequest) {
     const reply =
       response.content[0].type === "text" ? response.content[0].text : "";
 
-    // Persist the assistant reply
     await supabase.from("messages").insert({
       lead_id: currentLeadId,
       client_id: client.id,
@@ -112,7 +154,26 @@ export async function POST(req: NextRequest) {
       content: reply,
     });
 
-    return NextResponse.json({ reply, leadId: currentLeadId });
+    // If the bot mentions booking, push lead to GHL
+    let ghlContactId: string | null = null;
+    if (detectBookingTrigger(reply) && leadInfo) {
+      ghlContactId = await syncLeadToGHL({
+        name: leadInfo.name,
+        email: leadInfo.email,
+        phone: leadInfo.phone,
+        businessType: leadInfo.businessType,
+        notes: messages.map((m: { role: string; content: string }) => `${m.role}: ${m.content}`).join("\n"),
+      });
+
+      if (ghlContactId) {
+        await supabase
+          .from("leads")
+          .update({ ghl_contact_id: ghlContactId, status: "qualified" })
+          .eq("id", currentLeadId);
+      }
+    }
+
+    return NextResponse.json({ reply, leadId: currentLeadId, ghlContactId });
   } catch (err) {
     console.error("[chat] error:", err);
     return NextResponse.json({ error: "Internal server error." }, { status: 500 });
