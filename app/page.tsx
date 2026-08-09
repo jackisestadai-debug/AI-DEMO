@@ -1,126 +1,58 @@
-"use client";
-
-import { useState, useRef, useEffect } from "react";
-
-interface Message {
-  role: "user" | "assistant";
-  content: string;
-}
+import Link from "next/link";
+import { products } from "@/lib/products";
+import AddToCartButton from "@/components/AddToCartButton";
 
 export default function Home() {
-  const [messages, setMessages] = useState<Message[]>([]);
-  const [input, setInput] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [leadId, setLeadId] = useState<string | null>(null);
-  const bottomRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages, loading]);
-
-  async function sendMessage(e: React.FormEvent) {
-    e.preventDefault();
-    if (!input.trim() || loading) return;
-
-    const userMessage: Message = { role: "user", content: input.trim() };
-    const updatedMessages = [...messages, userMessage];
-    setMessages(updatedMessages);
-    setInput("");
-    setLoading(true);
-
-    try {
-      const res = await fetch("/api/chat", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ messages: updatedMessages, leadId }),
-      });
-
-      const data = await res.json();
-
-      if (data.reply) {
-        setMessages([...updatedMessages, { role: "assistant", content: data.reply }]);
-      }
-      if (data.leadId) {
-        setLeadId(data.leadId);
-      }
-    } catch {
-      setMessages([
-        ...updatedMessages,
-        { role: "assistant", content: "Something went wrong. Please try again." },
-      ]);
-    } finally {
-      setLoading(false);
-    }
-  }
-
   return (
-    <div className="flex flex-col h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white border-b border-gray-200 px-4 py-3 shadow-sm">
-        <h1 className="text-base font-semibold text-gray-800">AI Appointment Setter</h1>
-      </header>
+    <main className="max-w-6xl mx-auto px-4">
+      <section className="py-16 text-center">
+        <p className="text-sm font-medium text-indigo-600 mb-3">
+          Sov djupare. Vakna piggare.
+        </p>
+        <h1 className="text-4xl sm:text-5xl font-bold tracking-tight text-gray-900 mb-4">
+          Enkla prylar för riktigt bra sömn
+        </h1>
+        <p className="text-gray-500 max-w-xl mx-auto">
+          Handplockade produkter som hjälper dig somna snabbare och sova lugnare,
+          natt efter natt.
+        </p>
+      </section>
 
-      {/* Messages */}
-      <div className="flex-1 overflow-y-auto px-4 py-4 space-y-3">
-        {messages.length === 0 && (
-          <p className="text-center text-gray-400 text-sm mt-24">
-            Say hello to start the conversation.
-          </p>
-        )}
-
-        {messages.map((msg, i) => (
-          <div key={i} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
-            <div
-              className={`max-w-xs lg:max-w-md px-4 py-2.5 rounded-2xl text-sm leading-relaxed whitespace-pre-wrap ${
-                msg.role === "user"
-                  ? "bg-blue-500 text-white rounded-br-sm"
-                  : "bg-white text-gray-800 border border-gray-200 rounded-bl-sm shadow-sm"
-              }`}
-            >
-              {msg.content}
-            </div>
-          </div>
-        ))}
-
-        {/* Typing indicator */}
-        {loading && (
-          <div className="flex justify-start">
-            <div className="bg-white border border-gray-200 rounded-2xl rounded-bl-sm shadow-sm px-4 py-3">
-              <div className="flex space-x-1.5 items-center">
-                <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: "0ms" }} />
-                <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: "150ms" }} />
-                <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: "300ms" }} />
+      <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 pb-20">
+        {products.map((product) => (
+          <div
+            key={product.slug}
+            className="group rounded-2xl border border-gray-200 overflow-hidden bg-white hover:shadow-lg transition-shadow"
+          >
+            <Link href={`/produkter/${product.slug}`}>
+              <div
+                className={`h-48 flex items-center justify-center text-6xl bg-gradient-to-br ${product.accent}`}
+              >
+                {product.emoji}
+              </div>
+            </Link>
+            <div className="p-5">
+              <Link href={`/produkter/${product.slug}`}>
+                <h3 className="font-semibold text-gray-900 mb-1">{product.name}</h3>
+              </Link>
+              <p className="text-sm text-gray-500 mb-4 line-clamp-2">
+                {product.description}
+              </p>
+              <div className="flex items-center justify-between">
+                <div className="flex items-baseline gap-2">
+                  <span className="font-semibold text-gray-900">{product.price} kr</span>
+                  {product.compareAtPrice && (
+                    <span className="text-sm text-gray-400 line-through">
+                      {product.compareAtPrice} kr
+                    </span>
+                  )}
+                </div>
+                <AddToCartButton slug={product.slug} />
               </div>
             </div>
           </div>
-        )}
-
-        <div ref={bottomRef} />
-      </div>
-
-      {/* Input bar */}
-      <form
-        onSubmit={sendMessage}
-        className="bg-white border-t border-gray-200 px-4 py-3"
-      >
-        <div className="flex gap-2">
-          <input
-            type="text"
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            placeholder="Type a message..."
-            disabled={loading}
-            className="flex-1 border border-gray-300 rounded-full px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50"
-          />
-          <button
-            type="submit"
-            disabled={loading || !input.trim()}
-            className="bg-blue-500 text-white rounded-full px-5 py-2 text-sm font-medium hover:bg-blue-600 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
-          >
-            Send
-          </button>
-        </div>
-      </form>
-    </div>
+        ))}
+      </section>
+    </main>
   );
 }
