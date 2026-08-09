@@ -7,7 +7,7 @@ import Header from "@/components/Header";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Lugna Nätter — Sov bättre ikväll",
+  title: "Nattro — Sov bättre ikväll",
   description: "Prylar för djupare, lugnare sömn. Viktade filtar, blåljusglasögon och mer.",
 };
 
