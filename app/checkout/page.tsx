@@ -10,6 +10,7 @@ export default function CheckoutPage() {
   const [form, setForm] = useState({
     name: "",
     email: "",
+    phone: "",
     address: "",
     postalCode: "",
     city: "",
@@ -69,6 +70,14 @@ export default function CheckoutPage() {
           placeholder="E-post"
           value={form.email}
           onChange={(e) => setForm({ ...form, email: e.target.value })}
+          className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
+        />
+        <input
+          required
+          type="tel"
+          placeholder="Telefon (för fraktbolaget)"
+          value={form.phone}
+          onChange={(e) => setForm({ ...form, phone: e.target.value })}
           className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
         />
         <input

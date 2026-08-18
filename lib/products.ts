@@ -8,6 +8,13 @@ export interface Product {
   accent: string; // tailwind gradient classes, must stay literal for the JIT scanner
   /** Internal only — never render this. Rough leverantörskostnad (CJdropshipping/Syncee) for margin planning. */
   costPriceSek: [number, number];
+  /**
+   * CJdropshipping variant id (vid) for the exact sourced SKU. Required for
+   * automatisk orderpush — without it, paid orders for this product land in
+   * status "awaiting_supplier_mapping" and must be placed on CJ manually.
+   * Fill in once a real product has been picked from CJ's EU-warehouse catalog.
+   */
+  cjVariantId?: string;
 }
 
 // Startkatalog för nischen sömn/wellness — sex produkttyper valda för att de är

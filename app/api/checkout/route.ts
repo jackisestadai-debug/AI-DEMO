@@ -10,6 +10,7 @@ interface CartItem {
 interface Customer {
   name: string;
   email: string;
+  phone: string;
   address: string;
   postalCode: string;
   city: string;
@@ -99,6 +100,7 @@ async function saveOrder(
     .insert({
       customer_name: customer.name,
       customer_email: customer.email,
+      phone: customer.phone,
       address: customer.address,
       postal_code: customer.postalCode,
       city: customer.city,
