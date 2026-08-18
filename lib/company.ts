@@ -4,9 +4,14 @@
 // are at hand — everything referencing this file (footer, /kontakt,
 // /angerratt, /integritetspolicy) updates automatically.
 export const company = {
-  legalName: "[Fyll i firmans registrerade namn]",
-  orgNumber: "[Fyll i organisationsnummer]",
+  legalName: "Jack Isestad",
+  // Kept out of git history (env var, not a literal) since a personnummer-
+  // baserat org.nr är känsligare att ha permanent i repot — visas ändå
+  // publikt på sajten, det är ju lagkravet, men slipper ligga kvar i
+  // commit-historiken. Sätt NEXT_PUBLIC_COMPANY_ORG_NUMBER i .env.local
+  // (lokalt) och i Vercels miljövariabler (produktion).
+  orgNumber: process.env.NEXT_PUBLIC_COMPANY_ORG_NUMBER || "[Fyll i organisationsnummer]",
   email: "hej@nattro.se",
-  address: "[Fyll i adress]",
+  address: "Ymers väg 6, [Fyll i postnummer och ort]",
   brand: "Nattro",
 };
