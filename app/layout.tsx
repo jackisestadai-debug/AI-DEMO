@@ -8,7 +8,7 @@ import Footer from "@/components/Footer";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Nattro — Sov bättre ikväll",
+  title: "Drömro — Sov bättre ikväll",
   description: "Prylar för djupare, lugnare sömn. Viktade filtar, blåljusglasögon och mer.",
 };
 

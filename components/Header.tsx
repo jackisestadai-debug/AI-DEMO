@@ -10,7 +10,7 @@ export default function Header() {
     <header className="sticky top-0 z-10 bg-white/90 backdrop-blur border-b border-gray-200">
       <div className="max-w-6xl mx-auto flex items-center justify-between px-4 py-4">
         <Link href="/" className="text-lg font-semibold tracking-tight text-gray-900">
-          🌙 Nattro
+          🌙 Drömro
         </Link>
         <Link
           href="/cart"

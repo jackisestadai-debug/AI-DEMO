@@ -32,7 +32,7 @@ export interface Product {
 export const products: Product[] = [
   {
     slug: "muntejp",
-    name: "Nattro Muntejp för Nattens Rutin (30-pack)",
+    name: "Drömro Muntejp för Nattens Rutin (30-pack)",
     price: 199,
     compareAtPrice: 299,
     description:
@@ -44,7 +44,7 @@ export const products: Product[] = [
   },
   {
     slug: "viktad-filt",
-    name: "Nattro Viktad Filt 6 kg (150×200 cm)",
+    name: "Drömro Viktad Filt 6 kg (150×200 cm)",
     price: 799,
     compareAtPrice: 1199,
     description:
@@ -55,7 +55,7 @@ export const products: Product[] = [
   },
   {
     slug: "sovmask-3d",
-    name: "Nattro 3D Sovmask med Minnesskum",
+    name: "Drömro 3D Sovmask med Minnesskum",
     price: 249,
     compareAtPrice: 399,
     description:
@@ -66,7 +66,7 @@ export const products: Product[] = [
   },
   {
     slug: "blaljusglasogon",
-    name: "Nattro Blåljusglasögon",
+    name: "Drömro Blåljusglasögon",
     price: 349,
     compareAtPrice: 549,
     description:
@@ -77,7 +77,7 @@ export const products: Product[] = [
   },
   {
     slug: "vitt-brus-maskin",
-    name: "Nattro Vitt Brus-maskin",
+    name: "Drömro Vitt Brus-maskin",
     price: 449,
     compareAtPrice: 649,
     description:
@@ -88,7 +88,7 @@ export const products: Product[] = [
   },
   {
     slug: "kylande-kudde",
-    name: "Nattro Kylande Gelkudde-insats",
+    name: "Drömro Kylande Gelkudde-insats",
     price: 599,
     compareAtPrice: 899,
     description:
@@ -99,7 +99,7 @@ export const products: Product[] = [
   },
   {
     slug: "magnesium-spray",
-    name: "Nattro Magnesium Sömnspray 100 ml",
+    name: "Drömro Magnesium Sömnspray 100 ml",
     price: 199,
     compareAtPrice: 299,
     description:

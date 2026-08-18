@@ -11,7 +11,7 @@ export const company = {
   // commit-historiken. Sätt NEXT_PUBLIC_COMPANY_ORG_NUMBER i .env.local
   // (lokalt) och i Vercels miljövariabler (produktion).
   orgNumber: process.env.NEXT_PUBLIC_COMPANY_ORG_NUMBER || "[Fyll i organisationsnummer]",
-  email: "hej@nattro.se",
+  email: "hej@dromro.se",
   address: "Ymers väg 6, 148 33 Ösmo",
-  brand: "Nattro",
+  brand: "Drömro",
 };
