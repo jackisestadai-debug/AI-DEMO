@@ -26,8 +26,13 @@ export default function Home() {
           >
             <Link href={`/produkter/${product.slug}`}>
               <div
-                className={`h-48 flex items-center justify-center text-6xl bg-gradient-to-br ${product.accent}`}
+                className={`relative h-48 flex items-center justify-center text-6xl bg-gradient-to-br ${product.accent}`}
               >
+                {product.featured && (
+                  <span className="absolute top-3 left-3 bg-white/90 text-gray-900 text-xs font-semibold px-2.5 py-1 rounded-full">
+                    🔥 Populär
+                  </span>
+                )}
                 {product.emoji}
               </div>
             </Link>

@@ -15,15 +15,33 @@ export interface Product {
    * Fill in once a real product has been picked from CJ's EU-warehouse catalog.
    */
   cjVariantId?: string;
+  /** Marks the current hero product to push organic content around. Only one at a time. */
+  featured?: boolean;
 }
 
-// Startkatalog för nischen sömn/wellness — sex produkttyper valda för att de är
+// Startkatalog för nischen sömn/wellness — produkttyper valda för att de är
 // verifierat efterfrågade dropshipping-produkter 2026 (viktade filtar, sovmasker,
-// vitt brus-maskiner, magnesiumspray) med sund marginal (leverantörskostnad
-// ~30-50% av försäljningspris). Namn/priser/specs är realistiska utgångslägen —
-// byt till exakta SKU:er + riktiga produktfoton när ett leverantörskonto
-// (CJdropshipping / Syncee, EU-lager för snabb leverans till Sverige) är valt.
+// vitt brus-maskiner, magnesiumspray, muntejp) med sund marginal (leverantörskostnad
+// ~30-50% av försäljningspris). Muntejp är markerad "featured": störst viralt
+// organiskt genomslag just nu (+134% årlig söktrend, #mouthtaping ~25M visningar
+// på TikTok) och lägst fraktvikt/kostnad — bra kandidat att satsa första
+// annonsbudgeten på när den finns. Namn/priser/specs är realistiska
+// utgångslägen — byt till exakta SKU:er + riktiga produktfoton när ett
+// leverantörskonto (CJdropshipping / Syncee, EU-lager för snabb leverans
+// till Sverige) är valt.
 export const products: Product[] = [
+  {
+    slug: "muntejp",
+    name: "Nattro Muntejp för Nattens Rutin (30-pack)",
+    price: 199,
+    compareAtPrice: 299,
+    description:
+      "Skonsam, hudvänlig tejp för din kvällsrutin — samma sorts produkt som blivit ett stort samtalsämne på TikTok (#mouthtaping, tiotals miljoner visningar). Enkel att sätta på och ta av. OBS: inte en medicinsk produkt och inte lämplig vid sömnapné, nästäppa eller andningsbesvär — rådgör med läkare vid osäkerhet.",
+    emoji: "🤐",
+    accent: "from-rose-500 to-red-600",
+    costPriceSek: [60, 100],
+    featured: true,
+  },
   {
     slug: "viktad-filt",
     name: "Nattro Viktad Filt 6 kg (150×200 cm)",
