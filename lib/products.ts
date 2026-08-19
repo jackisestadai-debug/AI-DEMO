@@ -22,10 +22,11 @@ export interface Product {
 // Startkatalog för nischen sömn/wellness — produkttyper valda för att de är
 // verifierat efterfrågade dropshipping-produkter 2026 (viktade filtar, sovmasker,
 // vitt brus-maskiner, magnesiumspray, muntejp) med sund marginal (leverantörskostnad
-// ~30-50% av försäljningspris). Muntejp är markerad "featured": störst viralt
-// organiskt genomslag just nu (+134% årlig söktrend, #mouthtaping ~25M visningar
-// på TikTok) och lägst fraktvikt/kostnad — bra kandidat att satsa första
-// annonsbudgeten på när den finns. Namn/priser/specs är realistiska
+// ~30-50% av försäljningspris). Kylande Gelkudde är markerad "featured": mer
+// seriöst/premium förstaintryck än muntejp (som saknar medicinsk evidens och
+// har en varningstext), löser ett tydligt problem (vaknar svettig/varm), och
+// är mindre konkurrensutsatt än viktad filt som redan säljs billigt i fysisk
+// butik (Jysk/Rusta/IKEA) i Sverige. Namn/priser/specs är realistiska
 // utgångslägen — byt till exakta SKU:er + riktiga produktfoton när ett
 // leverantörskonto (CJdropshipping / Syncee, EU-lager för snabb leverans
 // till Sverige) är valt.
@@ -40,7 +41,6 @@ export const products: Product[] = [
     emoji: "🤐",
     accent: "from-rose-500 to-red-600",
     costPriceSek: [60, 100],
-    featured: true,
   },
   {
     slug: "viktad-filt",
@@ -96,6 +96,7 @@ export const products: Product[] = [
     emoji: "❄️",
     accent: "from-teal-500 to-emerald-600",
     costPriceSek: [160, 220],
+    featured: true,
   },
   {
     slug: "magnesium-spray",
